@@ -153,7 +153,7 @@ supports:
 
 See [Using VSCode with Alive](vscode-alive.html).
 
-## JetBrains - NEW in Jan, 2023!
+## Intellij (new and experimental)
 
 [SLT](https://github.com/Enerccio/SLT) is a new (published on January,
 2023) plugin for the suite of JetBrains' IDEs. It uses a modified SLIME/Swank
@@ -175,6 +175,8 @@ At the time of writing, for its version 0.4, it supports:
 - graphical threads list
 - SDK support, automatic download for Windows users
 - multiple implementations support: SBCL, CCL, ABCL and AllegroCL.
+
+*warn: this plugin might not work on every Intellij releases.*
 
 <img src="assets/jetbrains-slt.png" style="width: 800px" alt="SLT, a good Common Lisp plugin for JetBrains IDEs."/>
 
