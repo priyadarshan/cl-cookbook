@@ -176,7 +176,7 @@ At the time of writing, for its version 0.4, it supports:
 - SDK support, automatic download for Windows users
 - multiple implementations support: SBCL, CCL, ABCL and AllegroCL.
 
-*warn: this plugin might not work on every Intellij releases.*
+*warn: this plugin might not work on every Intellij releases. See also this updated fork: https://github.com/ivanbulanov/SLT/releases*
 
 <img src="assets/jetbrains-slt.png" style="width: 800px" alt="SLT, a good Common Lisp plugin for JetBrains IDEs."/>
 
