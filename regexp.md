@@ -172,8 +172,18 @@ s-expressions instead of strings. This is called the
 ;; => 3, 6, #(), #()
 ~~~
 
+Which is equivalent to:
+
+~~~lisp
+(ppcre:scan "\\d+" "abc123def")
+~~~
+
+We used `scan`, but you can also use `all-matches-as-strings`, or any
+function that would accept a regular expression as argument: you use a
+lispy regexp instead.
+
 You can convert between string and tree representations
-with `parse-string`:
+with `parse-string` (which is an excellent way to learn from examples):
 
 ~~~lisp
 (ppcre:parse-string "(\\d+)-(\\w+)")
@@ -199,9 +209,12 @@ programmatically:
 
 (ppcre:scan (match-tag "div") "<div class='x'>")
 ;; => 0, 16, #(), #()
+
+(ppcre:all-matches-as-strings (match-tag "div") "<div class='x'>")
+;; => ("<div class='x'>")
 ~~~
 
-Common tree elements:
+Those are the common tree elements:
 
 | Tree form | String equivalent |
 |---|---|
