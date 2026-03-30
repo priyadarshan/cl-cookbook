@@ -129,6 +129,20 @@ returns a list of result.
 ;; => (11 12 13)
 ~~~
 
+You can also reference a function without using lambda. That function
+must accept the right number of arguments.
+
+~~~lisp
+(mapcar #'1+ '(1 2 3))
+;; => (2 3 4)
+
+(mapcar #'+ '(1 2 3) '(10 20 30))
+;; => (11 22 33)
+
+(mapcar #'+ '(1 2 3) '(10 20 30) '(100 200 300))
+;; => (111 222 333)
+~~~
+
 `map` is generic, it accepts lists and vectors as arguments, and
 expects the type for its result as first argument:
 
@@ -139,7 +153,7 @@ expects the type for its result as first argument:
 (map 'list (lambda (it) (+ it 10)) #(1 2 3))
 ;; => (11 12 13)
 
-(map 'string (lambda (it) (code-char it)) '#(97 98 99))
+(map 'string #'code-char '#(97 98 99))
 ;; => "abc"
 ~~~
 
