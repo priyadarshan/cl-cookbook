@@ -2001,7 +2001,7 @@ This outputs:
 ;; => 5
 ~~~
 
-Making a cleaver use of tags is left as an exercise to the reader, but not to newcomers.
+Making a clever use of tags is left as an exercise to the reader, but not to newcomers.
 
 ### `do` for newcomers?
 
