@@ -114,6 +114,7 @@ supports:
 - Snippets
 - REPL integration
 - Interactive Debugger
+  - restart frames
 - REPL history
 - Inline evaluation
 - Macro expand
