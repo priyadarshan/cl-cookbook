@@ -2348,9 +2348,8 @@ See the functions `subst` and `sublis` above to replace elements in a tree.
 
 ## FSet - immutable functional data structures
 
-You may want to have a look at the
-[FSet](https://gitlab.common-lisp.net/fset/fset/-/wikis/home)
-library (in Quicklisp) to use immutable data structures.
+You may want to have a look at the **FSet** library (in Quicklisp) and its
+excellent documentation to use immutable data structures.
 
      (ql:quickload "fset")
 
@@ -2358,11 +2357,13 @@ FSet provides the following collections:
 
 - `maps`, aka hash-tables
 - `seqs`, aka sequences
-- `sets`
-- `bags` or multisets, aka sets that count how many occurences of a member is in the bag.
+- `sets`, aka "unordered collection of values without duplicates",
+- `bags` or multisets, aka sets that count how many occurences of a member is in the bag,
+- and more: "replay sets and maps", "binary relations", "tuples", "interval sets" (ranges), "bounded sets", and similar collections with strict (weak) ordering.
 
-You can start reading its [introduction](https://gitlab.common-lisp.net/fset/fset/-/wikis/FSet/Intro) and its [tutorial](https://gitlab.common-lisp.net/fset/fset/-/wikis/FSet/Tutorial).
+You can start reading its [excellent documentation](https://gitlab.common-lisp.net/fset/fset/-/wikis/FSet/Intro) that includes a high level conceptual background, a tutorial, an API reference and a comparison with functional data structures from other ecosystems.
 
+- FSet's home and issue tracker: https://gitlab.common-lisp.net/fset/fset/
 
 ## Sycamore - purely functional weight-balanced binary trees
 
