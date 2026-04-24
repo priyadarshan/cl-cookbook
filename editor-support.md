@@ -4,6 +4,8 @@ title: Editor support
 
 The editor of choice is still [Emacs](https://www.gnu.org/software/emacs/), but it is not the only one.
 
+For newcomers to the ecosystem, we advise to first try the ICL enhanced REPL and `mine`.
+
 ## Emacs
 
 [SLIME](https://github.com/slime/slime/) is the Superior Lisp
@@ -370,6 +372,8 @@ Common Lisp environment, built in Common Lisp.
 
 ## REPLs
 
+### ICL - featureful enhanced REPL for the terminal (NEW)
+
 [ICL](https://github.com/atgreen/icl), Interactive Common Lisp, is an
 enhanced REPL for the terminal. It works with any implementation you
 have on your system. It brings a *lot* of nice features, such as:
@@ -393,6 +397,8 @@ It comes with pre-built binaries. Try it out!
 ![](https://raw.githubusercontent.com/atgreen/icl/master/assets/browser-demo.gif)
 
 <!-- epub-exclude-end -->
+
+### cl-repl - a simple readline-based ipython-like REPL
 
 [cl-repl](https://github.com/lisp-maintainers/cl-repl) is an ipython-like REPL. It supports symbol completion, magic and shell commands, multi-line editing, editing command in a file and a simple debugger.
 
