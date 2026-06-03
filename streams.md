@@ -48,7 +48,7 @@ A stream is an object that represents a source or sink of
 characters or bytes. The standard defines several stream
 types:
 
-- **Input streams** support reading (`read-char`,
+- **Input streams** support reading (`read-char` and `unread-char`,
   `read-byte`, `read-line`, `read`).
 - **Output streams** support writing (`write-char`,
   `write-byte`, `write-string`, `format`).
@@ -401,6 +401,65 @@ symbol. `*terminal-io*` is typically a synonym stream.
 This lets you redirect where a stream goes by rebinding
 the symbol, without changing the stream object itself.
 
+## More stream functions and macros
+
+See all of them in the [streams dictionary on the CLCS](https://cl-community-spec.github.io/pages/Streams-Dictionary.html).
+
+### `listen`
+
+[`listen`](https://cl-community-spec.github.io/pages/listen.html):
+
+> Returns true if there is a character immediately available from input-stream; otherwise, returns false. On a non-interactive input-stream, listen returns true except when at end of file_1. If an end of file is encountered, listen returns false. listen is intended to be used when input-stream obtains characters from an interactive device such as a keyboard.
+
+### `finish-output, force-output, clear-output `
+
+[`finish-output, force-output, clear-output`](https://cl-community-spec.github.io/pages/finish_002doutput.html).
+
+When printing to standard output, `finish-output` can be necessary to
+ensure that all output is written to the stream before the program exits.
+
+`uiop:format!` is like `format`, but it calls `finish-output` before and after the output.
+
+### `terpri, fresh-line`
+
+[`terpri`](https://cl-community-spec.github.io/pages/terpri.html)
+always writes a newline to an output stream.
+
+`fresh-line` writes a newline only if the stream isn't at the start of a newline.
+
+
+### `y-or-n-p`, `yes-or-no-p`
+
+[These functions](https://cl-community-spec.github.io/pages/y_002dor_002dn_002dp.html) print a prompt to `*query-io*`, wait for user input (a
+one-letter "y" or "n", or a complete "yes" or "no"), and return a
+boolean value.
+
+
+### `with-open-stream`
+
+[`with-open-stream`](https://cl-community-spec.github.io/pages/with_002dopen_002dstream.html)
+"performs a series of operations on the stream, returns a value, and then
+closes the stream."
+
+This macro can be used to run expressions in the context of the stream
+and ensure it is closed afterwards.
+
+Example from the Lem editor: `make-buffer-output-stream` is a
+primitive to create an editor buffer, and keep its stream open. We use
+`with-open-stream` to write content.
+
+```lisp
+(defun display-welcome ()
+  (when *enable-welcome*
+    ;; print the welcome message to the start buffer
+    (with-open-stream (stream (make-buffer-output-stream (buffer-start-point (current-buffer))))
+      (loop :with prefix := (/ (- (window-width (current-window)) *message-width*) 2)
+            :for line :in (str:lines *message-content*)
+            :do (format stream "~v@{~a~:*~}" prefix " ")
+            :do (format stream "~a~%" line)))))
+```
+
+
 ## Gray streams: extending the protocol
 
 The standard stream types are implemented by the
@@ -457,7 +516,7 @@ Using it:
 
 The key methods to implement depend on the stream type:
 
-for **character input streams:**
+For **character input streams:**
 
 - `stream-read-char` — read one character
 - `stream-unread-char` — push a character back

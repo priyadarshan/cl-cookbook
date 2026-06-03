@@ -4,11 +4,16 @@ title: Input/Output
 
 Let's see some useful patterns for input/output.
 
-## Asking for user input: `read`, `read-line`
+## Asking for user input: `y-or-n-p`, `yes-or-no-p`, `read`, `read-line`
+
+The functions [`y-or-n-p` and
+`yes-or-no-p`](https://cl-community-spec.github.io/pages/y_002dor_002dn_002dp.html)
+print a prompt, stop the world and wait for a "yes" or "no" input (a
+short form or a long form).
 
 The [`read`](https://cl-community-spec.github.io/pages/read.html)
 function, when called with no other argument, stops the world and
-waits for user input:
+waits for input, but reads Lisp forms.
 
 ~~~lisp
 CL-USER> (read)
