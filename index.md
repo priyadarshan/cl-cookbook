@@ -42,7 +42,6 @@ The CL Cookbook aims to tackle all sort of topics, for the beginner and for the 
 * [Dates and Times](dates_and_times.html)
 * [Pattern Matching](pattern_matching.html)
 * [Input/Output](io.html)
-* [Streams](streams.html)
 * [Files and Directories](files.html)
 * [CLOS (the Common Lisp Object System)](clos.html)
 
@@ -60,6 +59,7 @@ The CL Cookbook aims to tackle all sort of topics, for the beginner and for the 
 * [Performance Tuning](performance.html)
 * [Testing and Continuous Integration](testing.html)
 * [Scripting. Building executables](scripting.html)
+* [Streams](streams.html)
 <!-- epub-exclude-start -->
 * [Miscellaneous](misc.html)
 <!-- epub-exclude-end -->

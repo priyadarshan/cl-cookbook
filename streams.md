@@ -5,11 +5,42 @@ title: Streams
 Streams are the standard abstraction for input and output in
 Common Lisp. Every time you read from a file, write to the
 terminal, or communicate over a network socket, you are using
-a stream. This chapter covers the stream types, how to create
+a stream.
+
+Many built-in functions have a stream argument, may it be optional:
+
+```lisp
+(print object &optional stream)
+
+(format stream control-string &rest format-arguments)
+
+(defmethod print-object (object stream) &body body)
+
+(with-open-file (stream filespec …) &body body)
+```
+
+This chapter covers the stream types, how to create
 and use them, and how to extend the stream protocol.
 
-For basic read/write recipes, see also
-[Input/Output](io.html).
+For basic read/write recipes, see also [Input/Output](io.html).
+
+## What is a stream anyways?
+
+A stream represents data that flows from one (or many) direction(s) to
+another (or others). It can represent a small, well delimited amount
+of data, as well as a possibly infinite amount of data.
+
+In English, a "stream" can represent a small river, an uninterrupted
+flow and, well, audio or video broadcast.
+
+While working with streams, we look at the data passing by us, instead
+of capturing all the stream *and then* doing our work. When we count
+boats passing by the river, we don't collect all the river into a
+bucket, and then count how many boats we captured. When reading a
+small file into CSV, we can read the file at once and then parse it,
+but if we work with very big files, we'll need a streaming API, and
+divide our work by logical chunks.
+
 
 ## Stream basics
 
@@ -47,8 +78,8 @@ are bound by default:
 
 | Variable | Purpose |
 |---|---|
-| `*standard-input*` | Default input (your terminal) |
-| `*standard-output*` | Default output (your terminal) |
+| `*standard-input*` | Default input (your terminal or REPL) |
+| `*standard-output*` or `t` | Default output (your terminal or REPL) |
 | `*error-output*` | Error/warning messages |
 | `*trace-output*` | Output from `trace` |
 | `*debug-io*` | Interactive debugging I/O |
@@ -62,6 +93,10 @@ default when you don't specify a stream:
 ;; these are equivalent:
 (print "hello")
 (print "hello" *standard-output*)
+(print "hello" )
+
+(format t "hello")
+(format *standard-output* "hello")
 ~~~
 
 You can rebind them with `let` to redirect output:
@@ -72,6 +107,20 @@ You can rebind them with `let` to redirect output:
   ;; prints to some-other-stream
 ~~~
 
+A convoluted example:
+
+```lisp
+(with-output-to-string (s)
+ (let ((*standard-output* s))
+   (princ "hello")
+   (princ " ")
+   (princ "streams")))
+;; => "hello streams"
+```
+
+We use `princ` to print an "aesthetic" representation of the
+object. `print` would print the quotes and a newline.
+
 ## File streams
 
 Use `open` to create a file stream, or the
@@ -79,11 +128,13 @@ Use `open` to create a file stream, or the
 properly closed:
 
 ~~~lisp
-;; reading a file:
-(with-open-file (stream "/tmp/test.txt")
-  (loop for line = (read-line stream nil)
+;; processing a file line by line:
+(with-open-file (my-file-stream "test.txt")
+  ;;            ^^^ bind this symbol in the macro body.
+  (loop for line = (read-line my-file-stream nil)
         while line
-        do (print line)))
+        when (search "cat" line)
+          do (format t "this line is about cats: ~s~&" line)))
 ~~~
 
 ~~~lisp
@@ -99,7 +150,7 @@ The `:direction` keyword controls the stream type:
 - `:input` (default) — read only
 - `:output` — write only
 - `:io` — read and write
-- `:probe` — just check if the file exists, then close
+- `:probe` — just check if the file exists, then close.
 
 For binary files, specify `:element-type`:
 
@@ -119,47 +170,47 @@ useful for building output or parsing input without files.
 
 ### Writing to a string: `with-output-to-string`
 
+This macro allows to bind a symbol to a stream, to call functions that
+print to this stream in the macro body, and in the end to create a
+string:
+
 ~~~lisp
 (with-output-to-string (s)
-  (format s "Hello, ~a!" "world"))
+  ;; more clever processing…
+  (format s "Hello, ")
+  (format s "world!"))
 ;; => "Hello, world!"
 ~~~
 
-This is the idiomatic way to build strings with
-`format`, `write-string`, or other stream operations. It is
-often the stream-oriented equivalent of using `format` with a
-destination of `nil`:
+You can use `format`, `write-string`, or other stream operations.
+
+This can be seen as a more flexible equivalent of using `format` with
+a destination of `nil`:
 
 ~~~lisp
-(format nil "Hello, ~a!" "world")
+(format nil "Hello, world!")
 ;; => "Hello, world!"
-~~~
-
-It is especially handy when you already have functions that
-write to a stream, such as `print-object` methods:
-
-~~~lisp
-(defclass person ()
-  ((name :initarg :name :reader person-name)))
-
-(defmethod print-object ((obj person) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~a" (person-name obj))))
 ~~~
 
 ### Reading from a string: `with-input-from-string`
 
-`read` reads the next Lisp object from the stream, so it
-parses tokens using the Lisp reader. `read-char` reads a
-single character instead. Reading from a string is useful for
-small parsers, REPL helpers, or tests where you want input
-without touching the filesystem.
+Reading from a string is useful for small parsers, REPL helpers, or
+tests where you want input without touching the filesystem.
+
+For this example, because `read` parses tokens from a
+stream, we need to emulate an input stream with `with-input-from-string`:
 
 ~~~lisp
+;; see also read-from-string to parse one form.
 (with-input-from-string (s "123 456")
   (list (read s) (read s)))
 ;; => (123 456)
 ~~~
+
+For more options:
+
+- read [`with-input-from-string` on the Community Spec](https://cl-community-spec.github.io/pages/with_002dinput_002dfrom_002dstring.html)
+
 
 ### `make-string-input-stream` and `make-string-output-stream`
 
@@ -217,6 +268,8 @@ output to multiple streams simultaneously:
 This is useful for logging to both the console and a
 file at the same time.
 
+### Discarding output (writing to /dev/null)
+
 Calling `make-broadcast-stream` with no arguments is also the
 portable equivalent of writing to `/dev/null`: output sent to
 that stream is discarded.
@@ -234,17 +287,20 @@ output should go to the terminal, a file, or an in-memory
 string. That keeps the formatting code in one place and makes
 it easy to reuse.
 
+Below, the stream argument is an optional argument (it could also be a
+`&key` argument) and defaults to standard output.
+
 ~~~lisp
-(defun write-expense-report (expenses stream)
+(defun write-expense-report (expenses &optional (stream t))
+  "Write a small summary of our expenses."
   (format stream "Expense report~%")
   (format stream "==============~%")
   (dolist (entry expenses)
-    (destructuring-bind (label amount) entry
-      (format stream "~a: ~,2f EUR~%" label amount)))
+    (format stream "~a: ~,2f EUR~%" (first entry) (second entry)))
   (format stream "--------------~%")
   (format stream "Total: ~,2f EUR~%"
-          (loop for (_ amount) in expenses
-                sum amount)))
+          (loop for entry in expenses
+                sum (second entry))))
 ~~~
 
 The same function can now target different destinations:
@@ -253,18 +309,19 @@ The same function can now target different destinations:
 (let ((expenses '(("Books" 12.50)
                   ("Train" 24.10)
                   ("Lunch" 18.00))))
-  ;; 1) print to the REPL / terminal
-  (write-expense-report expenses *standard-output*)
+  ;; 1. print to the REPL / terminal (default)
+  (write-expense-report expenses)
 
-  ;; 2) save to a file
+  ;; 2. save to a file
   (with-open-file (out "/tmp/expenses.txt"
                        :direction :output
                        :if-exists :supersede)
     (write-expense-report expenses out))
 
-  ;; 3) capture as a string, for a test or an email body
+  ;; 3. capture as a string, for a test or an email body
   (with-output-to-string (out)
     (write-expense-report expenses out)))
+
 ;; => "Expense report
 ;; => ==============
 ;; => Books: 12.50 EUR
@@ -274,6 +331,8 @@ The same function can now target different destinations:
 ;; => Total: 54.60 EUR
 ;; => "
 ~~~
+
+### Writing to 2 streams at once
 
 If you want tee-style output — that is, writing the same output
 to two streams at once, like the Unix `tee` command — you can
@@ -326,10 +385,17 @@ operations to the stream that is the current value of a
 symbol. `*terminal-io*` is typically a synonym stream.
 
 ~~~lisp
-(let ((s (make-synonym-stream '*my-output*)))
-  (let ((*my-output* *standard-output*))
-    (format s "hi~%")))
-;; prints "hi" to standard output
+(let* ((a-stream (make-string-input-stream "123"))
+       (b-stream (make-string-input-stream "456"))
+       (my-synonym (make-synonym-stream 'c-stream)))
+
+  ;; setting our synonym stream symbol to A:
+  (setf c-stream a-stream)
+  (format t "reading stream A: ~a~&" (read my-synonym))
+
+  ;; switching streams to B:
+  (setf c-stream b-stream)
+  (format t "and now reading stream B: ~a~&" (read my-synonym)))
 ~~~
 
 This lets you redirect where a stream goes by rebinding
@@ -362,8 +428,7 @@ library provides a portable interface:
 ;; in your .asd:
 ;; :depends-on ("trivial-gray-streams")
 
-(defclass counting-stream
-    (trivial-gray-streams:fundamental-character-output-stream)
+(defclass counting-stream (trivial-gray-streams:fundamental-character-output-stream)
   ((inner :initarg :inner :reader inner-stream)
    (count :initform 0 :accessor char-count)))
 
@@ -392,7 +457,7 @@ Using it:
 
 The key methods to implement depend on the stream type:
 
-**Character input streams:**
+for **character input streams:**
 
 - `stream-read-char` — read one character
 - `stream-unread-char` — push a character back
@@ -400,14 +465,14 @@ The key methods to implement depend on the stream type:
 - `stream-read-line` (optional, for performance)
 - `stream-read-sequence` (optional, for performance)
 
-**Character output streams:**
+For **character output streams:**
 
 - `stream-write-char` — write one character
 - `stream-line-column` — current column (or `nil`)
 - `stream-write-string` (optional, for performance)
 - `stream-write-sequence` (optional, for performance)
 
-**Binary streams:**
+For **binary streams:**
 
 - `stream-read-byte`
 - `stream-write-byte`
