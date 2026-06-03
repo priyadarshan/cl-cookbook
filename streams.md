@@ -586,6 +586,6 @@ one character or byte at a time.
 - [CLHS: Streams](http://www.lispworks.com/documentation/HyperSpec/Body/21_.htm)
 - [CLtL2: Streams](https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node329.html)
 - [trivial-gray-streams](https://github.com/trivial-gray-streams/trivial-gray-streams)
-- [flexi-streams](https://edicl.github.io/flexi-streams/)
-- [nontrivial-gray-streams](https://github.com/yitzchak/nontrivial-gray-streams)
+- [flexi-streams](https://edicl.github.io/flexi-streams/) - FLEXI-STREAMS "implements "virtual" bivalent streams that can be layered atop real binary or bivalent streams and that can be used to read and write character data in various single- or multi-octet encodings which can be changed on the fly. It also supplies in-memory binary streams which are similar to string streams".
+- [nontrivial-gray-streams](https://github.com/yitzchak/nontrivial-gray-streams) - extensions to the Gray stream protocol (Sequence Extensions, File Position Extensions…) and, unlike trivial-gray-streams, it does not introduce its own subclasses of the fundamental stream classes. Instead it exports the CL implementation's fundamental stream classes directly.
 - [Allegro CL simple-streams](https://franz.com/support/documentation/10.1/doc/streams.htm)
