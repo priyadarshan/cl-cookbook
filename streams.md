@@ -421,6 +421,42 @@ symbol. `*terminal-io*` is typically a synonym stream.
 This lets you redirect where a stream goes by rebinding
 the symbol, without changing the stream object itself.
 
+## Pitfall: streams may be buffered, `finish-output`
+
+Be aware that some streams can be buffered and that buffered output
+may not appear immediately. Use `finish-output`.
+
+What may happen is that the buffer may hold data for a short while
+before passing it to the stream. This mechanism is generally useful
+under load, when the input source feeds data faster than the stream
+can handle it.
+
+As such, this snippet is typically not portable, it may vary across
+implementations and may depend on the context (running this in a busy
+terminal, etc):
+
+~~~lisp
+(write "enter an expression > ")
+(read)
+~~~
+
+You logically expect to read the prompt string, then to enter an expression.
+
+But you could get the blocking `(read)` before seeing the text on your terminal.
+
+To ensure all the stream output is written in time, use `finish-output`:
+
+~~~lisp
+(write "enter an expression > ")
+(finish-output)
+(read)
+~~~
+
+`uiop` also defines `uiop:format!` which calls `finish-output` before
+and after printing to the stream.
+
+See also [force-output and clear-output](https://cl-community-spec.github.io/pages/finish_002doutput.html) (initiate the emptying of buffers but don't wait, attempt to abord output operations).
+
 ## More stream functions and macros
 
 See all of them in the [streams dictionary on the CLCS](https://cl-community-spec.github.io/pages/Streams-Dictionary.html).
@@ -431,14 +467,6 @@ See all of them in the [streams dictionary on the CLCS](https://cl-community-spe
 
 > Returns true if there is a character immediately available from input-stream; otherwise, returns false. On a non-interactive input-stream, listen returns true except when at end of file_1. If an end of file is encountered, listen returns false. listen is intended to be used when input-stream obtains characters from an interactive device such as a keyboard.
 
-### `finish-output, force-output, clear-output `
-
-[finish-output, force-output, clear-output](https://cl-community-spec.github.io/pages/finish_002doutput.html).
-
-When printing to standard output, `finish-output` can be necessary to
-ensure that all output is written to the stream before the program exits.
-
-`uiop:format!` is like `format`, but it calls `finish-output` before and after the output.
 
 ### `terpri, fresh-line`
 
