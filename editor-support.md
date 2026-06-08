@@ -191,6 +191,7 @@ It is based on LSP (through cl-lsp), and currently supports:
 - REPL integration
 - Interactive Debugger
   - restart frames
+  - eval in frame (since v0.4.4)
 - REPL history
 - Inline evaluation
 - Macro expand
