@@ -650,7 +650,6 @@ Avoid doing this in production.
 
 - [OCICL](https://github.com/ocicl/ocicl/) - a modern alternative to quicklisp for ASDF system distribution and management, code linting, project scaffolding.
 - [cl-cookieproject](https://github.com/vindarel/cl-cookieproject) - a project skeleton for a ready-to-use project with an entry point and unit tests. With a `src/` subdirectory, some more metadata, a 5AM test suite, a way to build a binary, an example CLI args parsing, Roswell integration.
-- Source code organization, libraries and packages:  [https://lispmethods.com/libraries.html](https://lispmethods.com/libraries.html)
 
 ## Credits
 
