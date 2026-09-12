@@ -96,7 +96,7 @@ Iterate, with minor modifications.
 
 ### The `for` library
 
-**[for](https://github.com/Shinmera/for/)** is an extensible iteration macro
+**[for](https://codeberg.org/shinmera/for/)** is an extensible iteration macro
 that is often shorter than `loop`, that "unlike `loop` is extensible and
 sensible, and unlike Iterate does not require code-walking and is easier to
 extend".
@@ -1551,7 +1551,7 @@ For simple types like `fixnum, float, t and nil` you can omit `:of-type`:
    :sum (* i j))
 ~~~
 
-You can also precise the type after `sum` and other accumulation clauses:
+You can also declare the type after `sum` and other accumulation clauses:
 
 ~~~lisp
 (loop for i fixnum below 10
